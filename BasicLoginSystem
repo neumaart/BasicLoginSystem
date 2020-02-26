@@ -1,0 +1,171 @@
+from tkinter import *
+from tkinter import messagebox
+import json
+usernames = json.load(open("savedUsers.json"))
+
+def existing(ask):
+    window = Tk()
+    window.title("Login")
+    window.geometry("700x500")
+        
+    DoYouHave = Label(window, text = "Do you have an existing username?")
+    DoYouHave.grid(column = 0, row = 0)
+
+    def clicked():
+
+        yes_no = str(ask.get())
+        print(yes_no)
+
+        if yes_no.upper() == "YES":
+            window.destroy()
+            return oldUser(" ", " ")
+        elif yes_no.upper() == "NO":
+            window.destroy()
+            return newUser(" ", " ")
+        else:
+            error = messagebox.showerror("Invalid answer", "Please enter a yes or no answer!")
+            window.destroy()
+            return existing("  ")
+
+    Confirm = Button(window, text = "Confirm", command = clicked)
+    Confirm.grid(column = 2, row = 0)
+
+    ask = Entry(window, width = 10)
+    ask.grid(column = 1, row = 0)
+    ask.focus()
+
+    window.mainloop()
+
+
+def oldUser(user, pas):
+    windoww = Tk()
+    windoww.title("Returning User")
+    windoww.geometry("700x500")
+
+    enterUser = Label(windoww, text = "Please enter your username:")
+    enterUser.grid(column = 0, row = 1)
+
+    enterPas = Label(windoww, text = "Please enter your password:")
+    enterPas.grid(column = 0, row = 2)
+
+    user = Entry(windoww, width = 15)
+    user.grid(column = 1, row = 1)
+    user.focus()
+
+    pas = Entry(windoww, width = 15)
+    pas.grid(column = 1, row = 2)
+
+    def triggered():
+        
+        typeUser = str(user.get())
+        typePas = str(pas.get())
+
+        if typeUser in usernames and usernames[typeUser] == typePas:
+            windoww.destroy()
+
+            endgame = Tk()
+            endgame.title("Succesfull Login")
+            endgame.geometry("350x250")
+
+            endGame = Label(endgame, text = "You have successfully logged in!")
+            endGame.grid(column = 10, row = 10)
+
+        else:
+            invalid = messagebox.showerror("Invalid input!", "Username or password was incorrect! Please try again!")
+            windoww.destroy()
+            return oldUser(" ", " ")
+    
+    def niggered():
+        windoww.destroy()
+        return(existing(" "))
+    
+    confirmm = Button(windoww, text = "Confirm", command = triggered)
+    confirmm.grid(column = 3, row = 2)
+
+    back = Button(windoww, text = "Back", command = niggered)
+    back.grid(column = 0, row = 0)
+
+    windoww.mainloop()
+
+def newUser(newUse, newPas):
+    
+    windowww = Tk()
+    windowww.title("Create a user")
+    windowww.geometry("700x500")
+
+    createUser = Label(windowww, text = "Create a username:", )
+    createUser.grid(column = 0, row = 1)
+
+    createPas = Label(windowww, text = "Create a password:")
+    createPas.grid(column = 0, row = 2)
+
+    newUse = Entry(windowww, width = 15)
+    newUse.grid(column = 1, row = 1)
+
+    newPas = Entry(windowww, width = 15)
+    newPas.grid(column = 1, row = 2)
+
+    def continuee():
+        
+        newCreate = str(newUse.get())
+        createNew = str(newPas.get())
+
+        if newCreate in usernames:
+            tryAgain = messagebox.showerror("Invalid input", "This username is taken!")
+            windowww.destroy()
+            return newUser(" ", " ")
+        elif newCreate not in usernames:
+            usernames[newCreate] = createNew
+            windowww.destroy()
+
+            wouldYou = Tk()
+            wouldYou.title("Continue")
+            wouldYou.geometry("350x250")
+
+            question = Label(wouldYou, text = "What would you like to do next?")
+            question.grid(column = 1, row = 0)
+
+            def back():
+                wouldYou.destroy()
+                return(oldUser(" ", " "))
+                newUsers = usernames
+            
+            def quitt():
+                wouldYou.destroy()
+            
+            def anotherOne():
+                wouldYou.destroy()
+                return(newUser(" ", " "))
+
+            yes = Button(wouldYou, text = "Login", command = back)
+            yes.grid(column = 0, row = 1)
+
+            no = Button(wouldYou, text = "Quit", command = quitt)
+            no.grid(column = 1, row = 1)
+
+            maybe = Button(wouldYou, text = "Create another user", command = anotherOne)
+            maybe.grid(column = 2, row = 1)
+
+            wouldYou.mainloop()
+    
+    def quitter():
+        windowww.destroy()
+        return(existing(" "))
+
+    confirmmm = Button(windowww, text = "Confirm", command = continuee)
+    confirmmm.grid(column = 3, row = 2)
+
+    cancel = Button(windowww, text = "Back", command = quitter)
+    cancel.grid(column = 0, row = 0)
+
+    windowww.mainloop()
+
+    newUsers = usernames
+    print(newUsers)
+
+    j = json.dumps(newUsers)
+    with open("savedUsers.json", "w") as f:
+        f.write(j)
+        f.close()
+
+print(existing(" "))
